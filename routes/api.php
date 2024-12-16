@@ -8,5 +8,13 @@ Route::get('/user', function (Request $request) {
 })->middleware('auth:sanctum');
 
 Route::get('/welcome', function (Request $request) {
-    return 'fikri';
+    return response()->json([
+        'name' => "Fikri"
+    ]); // return 'fikri';
+});
+
+Route::post('/welcome', function (Request $request) {
+    return $request->all(); //untuk return semua key dan value yang ada di body 
+    // return $request->header('Authorization'); untuk return header
+    // return $request->nama; untuk return berdasarkan key
 });
