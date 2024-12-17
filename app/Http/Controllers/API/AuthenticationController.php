@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
+use App\ResponseFormatter;
 
 class AuthenticationController extends Controller
 {
@@ -16,8 +17,8 @@ class AuthenticationController extends Controller
 
         $user = User::where("email", $email)->first();
         if (is_null($user)) {
-            return response()->json([
-                'message' => "User tidak ditemukan",
+            return ResponseFormatter::error(400, null, [
+                'User tidak ditemukan'
             ]);
         }
 
@@ -25,15 +26,15 @@ class AuthenticationController extends Controller
         if (Hash::check($password, $userPassword)) {
             $token = $user->createToken(config('app.name'))->plainTextToken;
 
-            return response()->json([
+            return ResponseFormatter::success([
                 'token' => $token,
             ]);
             // dd($token); testing untuk jika password benar akan mengembalikan token
             // dd('Password betul'); testing untuk jika password benar akan mengambalikan string
         }
 
-        return response()->json([
-            'message' => "Password salah"
+        return ResponseFormatter::error(400, null, [
+            'password salah'
         ]);
 
         // dd('Password salah'); jika password salah
