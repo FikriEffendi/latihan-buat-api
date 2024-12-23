@@ -18,7 +18,7 @@ Route::prefix('product')->middleware('auth:sanctum')->group(function () {
     Route::get('/', [ProductController::class, 'index']);
     Route::get('/{id}', [ProductController::class, 'show']);
     Route::post('/', [ProductController::class, 'store']);
-    Route::patch('/{id}', [ProductController::class, '']);
+    Route::patch('/{id}', [ProductController::class, 'update']);
     Route::delete('/{id}', [ProductController::class, 'destroy']);
 });
 

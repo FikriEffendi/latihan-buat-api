@@ -24,7 +24,13 @@ class ProductController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        $product = auth()->user()->products()->create([
+            'name' => request()->name,
+            'description' => request()->description,
+            'price' => request()->price,
+        ]);
+
+        return $this->show($product->id);
     }
 
     /**
@@ -42,7 +48,15 @@ class ProductController extends Controller
      */
     public function update(Request $request, string $id)
     {
-        //
+        $product = auth()->user()->products()->findOrFail($id);
+
+        $product->update([
+            'name' => request()->name,
+            'description' => request()->description,
+            'price' => request()->price,
+        ]);
+
+        return $this->show($id);
     }
 
     /**
@@ -50,6 +64,12 @@ class ProductController extends Controller
      */
     public function destroy(string $id)
     {
-        //
+        $product = auth()->user()->products()->findOrFail($id);
+
+        $product->delete();
+
+        return ResponseFormatter::success([
+            'is_deleted' => true,
+        ]);
     }
 }
