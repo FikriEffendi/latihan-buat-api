@@ -13,7 +13,12 @@ class ProductController extends Controller
      */
     public function index()
     {
-        $products = auth()->user()->products->pluck('api_response');
+        $query = auth()->user()->products();
+        if (!is_null(request()->search)) {
+            $query->where('name', 'LIKE', '%' . request()->search . '%');
+        }
+
+        $products = $query->get()->pluck('api_response');
 
         return ResponseFormatter::success($products);
         // dd($product); Untuk testing(debug) $product 
