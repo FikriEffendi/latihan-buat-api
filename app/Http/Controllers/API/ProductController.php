@@ -18,7 +18,12 @@ class ProductController extends Controller
             $query->where('name', 'LIKE', '%' . request()->search . '%');
         }
 
-        $products = $query->get()->pluck('api_response');
+        // $products = $query->get()->pluck('api_response');
+        // $products = $query->paginate(request()->per_page);
+        $products = $query->paginate(10);
+        $products->getCollection()->transform(function ($item) {
+            return $item->api_response;
+        });
 
         return ResponseFormatter::success($products);
         // dd($product); Untuk testing(debug) $product 
