@@ -5,6 +5,7 @@ namespace App\Http\Controllers\API;
 use App\Http\Controllers\Controller;
 use App\ResponseFormatter;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Validator;
 
 class ProductController extends Controller
 {
@@ -34,6 +35,12 @@ class ProductController extends Controller
      */
     public function store(Request $request)
     {
+        $validator = Validator::make(request()->all(), $this->getValidation());
+
+        if ($validator->fails()) {
+            return ResponseFormatter::error(400, $validator->errors());
+        }
+
         $product = auth()->user()->products()->create([
             'name' => request()->name,
             'description' => request()->description,
@@ -58,6 +65,12 @@ class ProductController extends Controller
      */
     public function update(Request $request, string $id)
     {
+        $validator = Validator::make(request()->all(), $this->getValidation());
+
+        if ($validator->fails()) {
+            return ResponseFormatter::error(400, $validator->errors());
+        }
+
         $product = auth()->user()->products()->findOrFail($id);
 
         $product->update([
@@ -81,5 +94,14 @@ class ProductController extends Controller
         return ResponseFormatter::success([
             'is_deleted' => true,
         ]);
+    }
+
+    public function getValidation()
+    {
+        return [
+            'name' => "required|min:2|max:20|",
+            'description' => "nullable|max:200",
+            'price' => "required|numeric"
+        ];
     }
 }
