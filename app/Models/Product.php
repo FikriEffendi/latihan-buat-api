@@ -14,6 +14,7 @@ class Product extends Model
         'name',
         'description',
         'price',
+        'image',
     ];
 
     public function user()
@@ -36,6 +37,16 @@ class Product extends Model
             'description' => $this->description,
             'price' => $this->price,
             'price_formatted' => $this->priceFormatted(),
+            'image_url' => $this->getImageUrlAttribute(),
         ];
+    }
+
+    protected function getImageUrlAttribute()
+    {
+        if (is_null($this->image)) {
+            return null;
+        }
+
+        return asset('storage/' . $this->image);
     }
 }

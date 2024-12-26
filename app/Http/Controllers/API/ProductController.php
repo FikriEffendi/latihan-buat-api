@@ -21,7 +21,7 @@ class ProductController extends Controller
 
         // $products = $query->get()->pluck('api_response');
         // $products = $query->paginate(request()->per_page);
-        $products = $query->paginate(10);
+        $products = $query->simplePaginate(10);
         $products->getCollection()->transform(function ($item) {
             return $item->api_response;
         });
@@ -41,11 +41,7 @@ class ProductController extends Controller
             return ResponseFormatter::error(400, $validator->errors());
         }
 
-        $product = auth()->user()->products()->create([
-            'name' => request()->name,
-            'description' => request()->description,
-            'price' => request()->price,
-        ]);
+        $product = auth()->user()->products()->create($this->prepareData());
 
         return $this->show($product->id);
     }
@@ -73,11 +69,7 @@ class ProductController extends Controller
 
         $product = auth()->user()->products()->findOrFail($id);
 
-        $product->update([
-            'name' => request()->name,
-            'description' => request()->description,
-            'price' => request()->price,
-        ]);
+        $product->update($this->prepareData());
 
         return $this->show($id);
     }
@@ -96,12 +88,31 @@ class ProductController extends Controller
         ]);
     }
 
-    public function getValidation()
+    protected function getValidation()
     {
         return [
             'name' => "required|min:2|max:20|",
             'description' => "nullable|max:200",
-            'price' => "required|numeric"
+            'price' => "required|numeric",
+            'image' => "nullable|image|max:1024",
         ];
+    }
+
+    protected function prepareData()
+    {
+        $payload = [
+            'name' => request()->name,
+            'description' => request()->description,
+            'price' => request()->price,
+        ];
+
+        if (!is_null($payload)) {
+            $payload['image'] = request()->file('image')->store(
+                'product-image',
+                'public'
+            );
+        }
+
+        return $payload;
     }
 }
